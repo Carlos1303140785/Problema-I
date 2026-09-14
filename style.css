@@ -1,0 +1,224 @@
+:root {
+  --bg: #282a36;
+  --cur: #44475a;
+  --fg: #f8f8f2;
+  --cmt: #6272a4;
+  --cyan: #8be9fd;
+  --green: #50fa7b;
+  --orange: #ffb86c;
+  --pink: #ff79c6;
+  --purple: #bd93f9;
+  --red: #ff5555;
+  --yellow: #f1fa8c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Fira Code", Consolas, monospace;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--cyan);
+}
+
+nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #21222c;
+  border-bottom: 1px solid var(--cur);
+}
+
+nav b {
+  color: var(--purple);
+  margin-right: auto;
+}
+
+nav a {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+nav a:hover,
+nav a.on {
+  color: var(--pink);
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1 {
+  color: var(--purple);
+}
+
+h2 {
+  color: var(--pink);
+}
+
+.card {
+  background: var(--cur);
+  border-radius: 8px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+
+.btn {
+  background: var(--purple);
+  color: var(--bg);
+  border: 0;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover {
+  background: var(--pink);
+}
+
+label {
+  display: block;
+  margin: 1rem 0 0.3rem;
+  color: var(--cyan);
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--cmt);
+  border-radius: 6px;
+  font: inherit;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--purple);
+}
+
+#msg {
+  margin-top: 1rem;
+}
+
+.ok {
+  color: var(--green);
+}
+
+.err {
+  color: var(--red);
+}
+
+/* Currículo Interativo */
+.grade {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(150px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.col h3 {
+  color: var(--orange);
+  text-align: center;
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.disc {
+  position: relative;
+  background: var(--cur);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.disc small {
+  color: var(--cmt);
+}
+
+.disc:hover {
+  border-color: var(--purple);
+}
+
+.disc.sel {
+  border-color: var(--pink);
+}
+
+.disc.lib {
+  border-color: var(--green);
+  box-shadow: 0 0 8px rgba(80, 250, 123, 0.4);
+}
+
+.disc.dim {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.tip {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  top: 100%;
+  width: 290px;
+  background: #21222c;
+  border: 1px solid var(--purple);
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+.disc:hover .tip {
+  display: block;
+}
+
+.col:nth-child(n + 4) .tip {
+  left: auto;
+  right: 0;
+}
+
+.tip b {
+  color: var(--cyan);
+}
+
+.tip ul {
+  margin: 0.2rem 0;
+  padding-left: 1.1rem;
+}
+
+.legenda {
+  font-size: 0.85rem;
+  color: var(--cmt);
+}
+
+.legenda span {
+  color: var(--green);
+}
+
+
+.formulario {
+  max-width: 600px;
+}

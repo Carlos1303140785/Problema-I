@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Currículo TADS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav></nav>
+
+    <main>
+        <h1>Currículo interativo</h1>
+
+        <p class="legenda">
+            Passe o mouse para ver detalhes. Clique em uma disciplina:
+            as que ela <span>pré-requisita</span> ficam com borda verde.
+            Clique de novo (ou fora) para limpar.
+        </p>
+
+        <div class="grade" id="grade"></div>
+    </main>
+
+    <script src="nav.js"></script>
+    <script src="disciplinas.js"></script>
+
+    <script>
+        let disc = DISCIPLINAS;
+        let projetos = [];
+        let sel = null;
+
+        const grade = document.getElementById("grade");
+
+        const esc = (s) =>
+            String(s).replace(
+                /[&<>"]/g,
+                (c) => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                }[c])
+            );
+
+        const por = (id) => disc.find((d) => d.id === id);
+
+        const libera = (id) =>
+            disc
+                .filter((d) => d.prereqs.includes(id))
+                .map((d) => d.id);
+
+        function tip(d) {
+            const pre = d.prereqs
+                .map((p) => por(p)?.nome)
+                .filter(Boolean);
+
+            const lib = libera(d.id)
+                .map((p) => por(p).nome);
+
+            const ps = projetos.filter(
+                (p) => p.disciplina === d.id
+            );
+
+            const lista = (titulo, itens, vazio) =>
+                `<b>${titulo}</b>` +
+                (itens.length
+                    ? `<ul>${itens
+                        .map((x) => `<li>${x}</li>`)
+                        .join("")}</ul>`
+                    : `<br>${vazio}<br>`);
+
+            return `
+                <div class="tip">
+                    <b>${esc(d.sigla)}</b> • ${d.creditos} créditos • ${d.carga} h<br>
+                    <b>Professores:</b>
+                    ${d.professores.length
+                        ? esc(d.professores.join(", "))
+                        : "—"}<br>
+                    ${lista(
+                        "Pré-requisitos",
+                        pre.map(esc),
+                        "nenhum"
+                    )}
+                    ${lista(
+                        "É pré-requisito de",
+                        lib.map(esc),
+                        "nenhuma"
+                    )}
+                    ${lista(
+                        "Projetos de alunos",
+                        ps.map(
+                            (p) =>
+                                `<a href="${esc(p.github)}" target="_blank" rel="noopener">${esc(p.nome)}</a> (${esc(p.semestre)})`
+                        ),
+                        "ainda não há"
+                    )}
+                </div>
+            `;
+        }
+
+        function render() {
+            grade.innerHTML = [1, 2, 3, 4, 5, 6]
+                .map(
+                    (s) =>
+                        `<div class="col">
+                            <h3>${s}º semestre</h3>
+                            ${disc
+                                .filter((d) => d.semestre === s)
+                                .map(
+                                    (d) =>
+                                        `<div class="disc" data-id="${d.id}">
+                                            <b>${esc(d.nome)}</b><br>
+                                            <small>${esc(d.sigla)} • ${d.carga} h</small>
+                                            ${tip(d)}
+                                        </div>`
+                                )
+                                .join("")}
+                        </div>`
+                )
+                .join("");
+
+            aplica();
+        }
+
+        function aplica() {
+            const lib = sel ? libera(sel) : [];
+
+            document.querySelectorAll(".disc").forEach((el) => {
+                const id = el.dataset.id;
+
+                el.classList.toggle("sel", id === sel);
+                el.classList.toggle("lib", lib.includes(id));
+                el.classList.toggle(
+                    "dim",
+                    !!sel && id !== sel && !lib.includes(id)
+                );
+            });
+        }
+
+        grade.addEventListener("click", (e) => {
+            const el = e.target.closest(".disc");
+
+            if (!el || e.target.closest("a")) {
+                return;
+            }
+
+            sel = sel === el.dataset.id ? null : el.dataset.id;
+            aplica();
+            e.stopPropagation();
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".disc")) {
+                sel = null;
+                aplica();
+            }
+        });
+
+        render();
+
+        fetch(API_URL + "/api/disciplinas")
+            .then((r) => r.json())
+            .then((d) => {
+                disc = d;
+                render();
+            })
+            .catch(() => {});
+
+        fetch(API_URL + "/api/projetos")
+            .then((r) => r.json())
+            .then((p) => {
+                projetos = p;
+                render();
+            })
+            .catch(() => {});
+    </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Enviar projeto • TADS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav></nav>
+
+    <main class="formulario">
+        <h1>Enviar projeto</h1>
+
+        <p>
+            Fez um projeto em uma disciplina?
+            Compartilhe o link do GitHub para aparecer no currículo.
+        </p>
+
+        <div class="card">
+            <label for="nome">Nome</label>
+            <input id="nome" maxlength="100">
+
+            <label for="curso">Curso</label>
+            <input id="curso" value="TADS" maxlength="60">
+
+            <label for="disciplina">Disciplina</label>
+            <select id="disciplina">
+                <option value="">Selecione...</option>
+            </select>
+
+            <label for="semestre">
+                Semestre em que cursou (ex.: 2026-1)
+            </label>
+            <input id="semestre" placeholder="2026-1" maxlength="10">
+
+            <label for="github">Link do GitHub</label>
+            <input
+                id="github"
+                type="url"
+                placeholder="https://github.com/usuario/projeto"
+            >
+
+            <br>
+            <br>
+
+            <button class="btn" id="enviar">Enviar</button>
+
+            <div id="msg"></div>
+        </div>
+    </main>
+
+    <script src="nav.js"></script>
+    <script src="disciplinas.js"></script>
+
+    <script>
+        const sel = document.getElementById("disciplina");
+        const msg = document.getElementById("msg");
+
+        DISCIPLINAS.forEach((d) => {
+            sel.add(
+                new Option(
+                    `${d.semestre}º sem • ${d.nome}`,
+                    d.id
+                )
+            );
+        });
+
+        const say = (texto, ok) => {
+            msg.className = ok ? "ok" : "err";
+            msg.textContent = texto;
+        };
+
+        document.getElementById("enviar").onclick = async () => {
+            const v = (id) =>
+                document.getElementById(id).value.trim();
+
+            const dados = {
+                nome: v("nome"),
+                curso: v("curso"),
+                disciplina: v("disciplina"),
+                semestre: v("semestre"),
+                github: v("github"),
+            };
+
+            if (Object.values(dados).some((x) => !x)) {
+                return say("Preencha todos os campos.", false);
+            }
+
+            if (
+                !/^https:\/\/(www\.)?github\.com\/[\w.-]+\/[\w.-]+/i.test(
+                    dados.github
+                )
+            ) {
+                return say(
+                    "Use um link de repositório do GitHub (https://github.com/usuario/repo).",
+                    false
+                );
+            }
+
+            try {
+                const r = await fetch(API_URL + "/api/projetos", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(dados),
+                });
+
+                if (!r.ok) {
+                    throw new Error(
+                        (await r.json()).erro || r.status
+                    );
+                }
+
+                say("Projeto enviado! Obrigado.", true);
+
+                ["nome", "semestre", "github"].forEach((id) => {
+                    document.getElementById(id).value = "";
+                });
+
+                sel.value = "";
+            } catch (e) {
+                say(
+                    "Não foi possível enviar: " + e.message,
+                    false
+                );
+            }
+        };
+    </script>
+</body>
+</html>
