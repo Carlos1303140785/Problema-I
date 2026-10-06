@@ -1,0 +1,5 @@
+- Criar o ambiente venv
+- Ativar o ambiente venv
+- Instalar o openpylx
+- Ativar o parser usando o comando python3 parser.py ou equivalente
+- Começar por index.html
